@@ -3,7 +3,7 @@ ScanDinamico es un Script que mantiene la ruta smb de escaneo en la impresora ac
 ---
 # FUNCIONAMIENTO
 ## preparación de entorno.
-debe tener una carpeta que contenga AutoScan.ps1, Isntalador.ps1, opcional esta el XML de la tarea programada, esto para que el sistema autoejecute AutoScan.ps1
+debe tener una carpeta que contenga AutoScan.ps1, Instalador.ps1, opcional esta el XML de la tarea programada, esto para que el sistema autoejecute AutoScan.ps1
 ---
 ## comportamiento
 cuando se instala por primera vez AutoScan desde Instalador.ps1 se crearan unas carpetas especificas donde se guardaran los datos de reintentos, direcciones de impresoras y las credenciales requeridas para autenticarse, es importante que LA INSTALACION sea desde eL ADMINISTRADOR INTEGRADO.
