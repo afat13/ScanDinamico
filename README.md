@@ -1,5 +1,9 @@
 # ScanDinamico
-ScanDinamico es un Script que mantiene la ruta smb de escaneo en la impresora actualizada cuando esta esta por IP y el DHCP de la red esta activo. actualmente esta diseñado para impresoras lexmark mx622
+ScanDinamico es un Script que mantiene la ruta smb de escaneo en la impresora actualizada cuando esta esta por IP y el DHCP de la red esta activo. actualmente esta diseñado para impresoras lexmark mx622 
+---
+# POR AHORA AUTOSCAN NO ES TOLERANTE A LA CONDICION DE CARRERA.
+---
+## SE IRAN SOLUCIONANDO EN FUTURAS VERSIONES. 
 ---
 # FUNCIONAMIENTO
 ## preparación de entorno.
