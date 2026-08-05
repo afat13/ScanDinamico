@@ -72,8 +72,10 @@ function extraerDatos {
     $n=0    
     $BaseDeConocimiento=Get-Content -Path $esf_settings -Raw
     $DatosParciales=([regex]::Matches($BaseDeConocimiento, $patrones["Perfiles"])).Value
+    
     if ($yo -eq "Desconocido"){Write-Host "CARGANDO PERFILES DISPONIBLES ..."}
-    foreach ($i in @($DatosParciales) ) {
+    
+    foreach ($i in @($DatosParciales)) {
         if ($yo -eq "Desconocido"){
             $n+=1
             $MisDatos["Perfil$($n)"]=[ordered]@{}
@@ -84,10 +86,21 @@ function extraerDatos {
             $MisDatos["Perfil$($n)"]["NOMBREUSUARIO"]=([regex]::Matches($i, $patrones["NOMBREUSUARIO"])).Value
             Write-Host " "
             Write-Host "digita $($n) si eres $($MisDatos["Perfil$($n)"]["NOMBREUSUARIO"]) y tu ruta es $($MisDatos["Perfil$($n)"]["RUTA"])"
-        }
-        if ($yo.GetType() -is [System.Object]) {
+        } elseif ($yo -is [System.String]) {
+            if ($i -like "*$($yo.Replace(' ',''))*") {
+                $n+=1
+                $MisDatos["Perfil$($n)"]=[ordered]@{}
+                $MisDatos["Perfil$($n)"]["UID"]=([regex]::Matches($i, $patrones["UID"])).Value
+                $MisDatos["Perfil$($n)"]["HOST"]=([regex]::Matches($i, $patrones["HOST"])).Value
+                $MisDatos["Perfil$($n)"]["RUTA"]=([regex]::Matches($i, $patrones["RUTA"])).Value
+                $MisDatos["Perfil$($n)"]["RUTANUEVA"]=$MisDatos["Perfil$($n)"]["RUTA"].Replace($MisDatos["Perfil$($n)"]["HOST"], (ObtenerIp -Impresora $Impresora))
+                $MisDatos["Perfil$($n)"]["NOMBREUSUARIO"]=([regex]::Matches($i, $patrones["NOMBREUSUARIO"])).Value
+                if (!(Test-Path -Path "$($RutaMemoria[$Index])\UID.dat")) { Set-Content -Path "$($RutaMemoria[$Index])\UID.dat" -Value $MisDatos["Perfil$($n)"]["UID"] } else { Add-Content -Path "$($RutaMemoria[$Index])\UID.dat" -Value $MisDatos["Perfil$($n)"]["UID"]}
+                Log -TipoEvento "INFORMATIVO" -Evento "se ha encotrado el perfil de $($MisDatos["Perfil$($n)"]["NOMBREUSUARIO"])"
+            } 
+        }elseif ($yo -is [System.Object]) {
             foreach ($b in $yo) {
-                if (($i -like "*$($b)*") -or ($i -like "*$($Info.CsDNSHostName)*")) {
+                if ($i -like "*$($b.Replace(' ',''))*") {
                     $n+=1
                     $MisDatos["Perfil$($n)"]=[ordered]@{}
                     $MisDatos["Perfil$($n)"]["UID"]=([regex]::Matches($i, $patrones["UID"])).Value
@@ -96,6 +109,7 @@ function extraerDatos {
                     $MisDatos["Perfil$($n)"]["RUTANUEVA"]=$MisDatos["Perfil$($n)"]["RUTA"].Replace($MisDatos["Perfil$($n)"]["HOST"], (ObtenerIp -Impresora $Impresora))
                     $MisDatos["Perfil$($n)"]["NOMBREUSUARIO"]=([regex]::Matches($i, $patrones["NOMBREUSUARIO"])).Value
                     if (!(Test-Path -Path "$($RutaMemoria[$Index])\UID.dat")) { Set-Content -Path "$($RutaMemoria[$Index])\UID.dat" -Value $MisDatos["Perfil$($n)"]["UID"] } else { Add-Content -Path "$($RutaMemoria[$Index])\UID.dat" -Value $MisDatos["Perfil$($n)"]["UID"]}
+                    Log -TipoEvento "INFORMATIVO" -Evento "se ha encotrado el perfil $($MisDatos["Perfil$($n)"]["NOMBREUSUARIO"]) de $($yo.Count) perfiles recordados"
                 }
             }
         }     
@@ -162,8 +176,9 @@ function ActualizarArchivoEsf {
         return $false
     }
     Set-Content -Path $esf_settings -Value $Contenido
-    
+    Remove-Item -Path $esf_settingsTmp
     Log -TipoEvento "Informativo" -Evento "Se ha reconstruido el archivo el archivo Esf"
+
     return $true
 }
 function Recomprimir {
